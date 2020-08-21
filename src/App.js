@@ -2,33 +2,44 @@ import React, { useState } from 'react';
 import data from './data';
 import Products from './components/Products';
 import Filter from './components/Filter';
+import Cart from './components/Cart';
 
 const App = () => {
-  const [sortState, setSortState] = useState({
+  const [changeState, setChangeState] = useState({
+    cartItems: [],
+    products: data,
     size: '',
     filter: '',
-    products: data,
   });
 
   const sizeHandler = (event) => {
     const { value } = event.target;
     value === ''
-      ? setSortState({ size: value, products: data })
-      : setSortState({
-          size: event.target.value,
-          products: data.filter((product) => {
-            return product.availableSizes.indexOf(event.target.value) >= 0;
-          }),
+      ? setChangeState((preView) => {
+          return {
+            ...preView,
+            size: value,
+            products: data,
+          };
+        })
+      : setChangeState((preView) => {
+          return {
+            ...preView,
+            size: value,
+            products: data.filter((product) => {
+              return product.availableSizes.indexOf(value) >= 0;
+            }),
+          };
         });
   };
 
   const filterHandler = (event) => {
     const { value } = event.target;
-    setSortState((state) => {
+    setChangeState((state) => {
       return {
         ...state,
         filter: value,
-        products: sortState.products.slice().sort((a, b) => {
+        products: changeState.products.slice().sort((a, b) => {
           return value === 'lowest'
             ? a.price > b.price
               ? 1
@@ -45,6 +56,35 @@ const App = () => {
     });
   };
 
+  const addToCartHandler = (product) => {
+    const cartItems = changeState.cartItems.slice();
+    let alreadyInCart = false;
+    cartItems.forEach((item) => {
+      if (item._id === product._id) {
+        item.count++;
+        alreadyInCart = true;
+      }
+    });
+    if (!alreadyInCart) {
+      cartItems.push({ ...product, count: 1 });
+    }
+    setChangeState((preView) => {
+      return {
+        ...preView,
+        cartItems: cartItems,
+      };
+    });
+  };
+
+  const removeFromCartHandler = (product) => {
+    const cartItems = changeState.cartItems.slice();
+    setChangeState((preView) => {
+      return {
+        ...preView,
+        cartItems: cartItems.filter((state) => state._id !== product._id),
+      };
+    });
+  };
   return (
     <div className="grid-container">
       <header>
@@ -54,15 +94,23 @@ const App = () => {
         <div className="content">
           <div className="main">
             <Filter
-              count={sortState.products.length}
-              filter={sortState.filter}
-              size={sortState.size}
+              count={changeState.products.length}
+              filter={changeState.filter}
+              size={changeState.size}
               filterProducts={filterHandler}
               sizeProducts={sizeHandler}
             />
-            <Products products={sortState.products} />
+            <Products
+              products={changeState.products}
+              onAddToCart={addToCartHandler}
+            />
           </div>
-          <div className="sidebar">Cart Items</div>
+          <div className="sidebar">
+            <Cart
+              cartItems={changeState.cartItems}
+              onRemoveFromCart={removeFromCartHandler}
+            />
+          </div>
         </div>
       </main>
       <footer>All right is reserved</footer>
