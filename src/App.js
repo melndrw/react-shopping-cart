@@ -6,21 +6,30 @@ import Cart from './components/Cart';
 
 const App = () => {
   const [changeState, setChangeState] = useState({
+    cartItems: [],
+    products: data,
     size: '',
     filter: '',
-    products: data,
-    cartItems: [],
   });
 
   const sizeHandler = (event) => {
     const { value } = event.target;
     value === ''
-      ? setChangeState({ size: value, products: data })
-      : setChangeState({
-          size: event.target.value,
-          products: data.filter((product) => {
-            return product.availableSizes.indexOf(event.target.value) >= 0;
-          }),
+      ? setChangeState((preView) => {
+          return {
+            ...preView,
+            size: value,
+            products: data,
+          };
+        })
+      : setChangeState((preView) => {
+          return {
+            ...preView,
+            size: value,
+            products: data.filter((product) => {
+              return product.availableSizes.indexOf(value) >= 0;
+            }),
+          };
         });
   };
 
@@ -47,19 +56,34 @@ const App = () => {
     });
   };
 
-  const cartHandler = (product) => {
-    const cartItem = changeState.cartItems.slice();
+  const addToCartHandler = (product) => {
+    const cartItems = changeState.cartItems.slice();
     let alreadyInCart = false;
-    cartItem.forEach((item) => {
+    cartItems.forEach((item) => {
       if (item._id === product._id) {
         item.count++;
         alreadyInCart = true;
       }
     });
     if (!alreadyInCart) {
-      cartItem.push({ ...product, count: 1 });
+      cartItems.push({ ...product, count: 1 });
     }
-    setChangeState({ cartItem });
+    setChangeState((preView) => {
+      return {
+        ...preView,
+        cartItems: cartItems,
+      };
+    });
+  };
+
+  const removeFromCartHandler = (product) => {
+    const cartItems = changeState.cartItems.slice();
+    setChangeState((preView) => {
+      return {
+        ...preView,
+        cartItems: cartItems.filter((state) => state._id !== product._id),
+      };
+    });
   };
   return (
     <div className="grid-container">
@@ -76,10 +100,16 @@ const App = () => {
               filterProducts={filterHandler}
               sizeProducts={sizeHandler}
             />
-            <Products products={changeState.products} addToCart={cartHandler} />
+            <Products
+              products={changeState.products}
+              onAddToCart={addToCartHandler}
+            />
           </div>
           <div className="sidebar">
-            <Cart cartItems={changeState.cartItems} />
+            <Cart
+              cartItems={changeState.cartItems}
+              onRemoveFromCart={removeFromCartHandler}
+            />
           </div>
         </div>
       </main>
