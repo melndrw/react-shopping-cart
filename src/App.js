@@ -2,19 +2,21 @@ import React, { useState } from 'react';
 import data from './data';
 import Products from './components/Products';
 import Filter from './components/Filter';
+import Cart from './components/Cart';
 
 const App = () => {
-  const [sortState, setSortState] = useState({
+  const [changeState, setChangeState] = useState({
     size: '',
     filter: '',
     products: data,
+    cartItems: [],
   });
 
   const sizeHandler = (event) => {
     const { value } = event.target;
     value === ''
-      ? setSortState({ size: value, products: data })
-      : setSortState({
+      ? setChangeState({ size: value, products: data })
+      : setChangeState({
           size: event.target.value,
           products: data.filter((product) => {
             return product.availableSizes.indexOf(event.target.value) >= 0;
@@ -24,11 +26,11 @@ const App = () => {
 
   const filterHandler = (event) => {
     const { value } = event.target;
-    setSortState((state) => {
+    setChangeState((state) => {
       return {
         ...state,
         filter: value,
-        products: sortState.products.slice().sort((a, b) => {
+        products: changeState.products.slice().sort((a, b) => {
           return value === 'lowest'
             ? a.price > b.price
               ? 1
@@ -45,6 +47,20 @@ const App = () => {
     });
   };
 
+  const cartHandler = (product) => {
+    const cartItem = changeState.cartItems.slice();
+    let alreadyInCart = false;
+    cartItem.forEach((item) => {
+      if (item._id === product._id) {
+        item.count++;
+        alreadyInCart = true;
+      }
+    });
+    if (!alreadyInCart) {
+      cartItem.push({ ...product, count: 1 });
+    }
+    setChangeState({ cartItem });
+  };
   return (
     <div className="grid-container">
       <header>
@@ -54,15 +70,17 @@ const App = () => {
         <div className="content">
           <div className="main">
             <Filter
-              count={sortState.products.length}
-              filter={sortState.filter}
-              size={sortState.size}
+              count={changeState.products.length}
+              filter={changeState.filter}
+              size={changeState.size}
               filterProducts={filterHandler}
               sizeProducts={sizeHandler}
             />
-            <Products products={sortState.products} />
+            <Products products={changeState.products} addToCart={cartHandler} />
           </div>
-          <div className="sidebar">Cart Items</div>
+          <div className="sidebar">
+            <Cart cartItems={changeState.cartItems} />
+          </div>
         </div>
       </main>
       <footer>All right is reserved</footer>
