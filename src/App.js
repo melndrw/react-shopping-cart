@@ -1,3 +1,4 @@
+// 2:06:00
 import React, { useState } from 'react';
 import data from './data';
 import Products from './components/Products';
@@ -6,12 +7,17 @@ import Cart from './components/Cart';
 
 const App = () => {
   const [changeState, setChangeState] = useState({
-    cartItems: [],
+    // at first the initial value of cartItems is empty array, then we change it to localStorage.
+    cartItems: localStorage.getItem('cartItems')
+      ? JSON.parse(localStorage.getItem('cartItems'))
+      : [],
     products: data,
     size: '',
     filter: '',
   });
-
+  const createOrderHanlder = (order) => {
+    alert('Need to save order for ' + order.name);
+  };
   const sizeHandler = (event) => {
     const { value } = event.target;
     value === ''
@@ -74,6 +80,7 @@ const App = () => {
         cartItems: cartItems,
       };
     });
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
   };
 
   const removeFromCartHandler = (product) => {
@@ -84,6 +91,11 @@ const App = () => {
         cartItems: cartItems.filter((state) => state._id !== product._id),
       };
     });
+    // this localStorage will act as a temporary storage to store the value when the page is refreshed.
+    localStorage.setItem(
+      'cartItems',
+      JSON.stringify(cartItems.filter((state) => state._id !== product._id))
+    );
   };
   return (
     <div className="grid-container">
@@ -109,6 +121,7 @@ const App = () => {
             <Cart
               cartItems={changeState.cartItems}
               onRemoveFromCart={removeFromCartHandler}
+              onCreateOrder={createOrderHanlder}
             />
           </div>
         </div>
