@@ -4,6 +4,8 @@ import data from './data';
 import Products from './components/Products';
 import Filter from './components/Filter';
 import Cart from './components/Cart';
+import store from './store';
+import { Provider } from 'react-redux';
 
 const App = () => {
   const [changeState, setChangeState] = useState({
@@ -98,36 +100,38 @@ const App = () => {
     );
   };
   return (
-    <div className="grid-container">
-      <header>
-        <a href="/">React Shopping Cart</a>
-      </header>
-      <main>
-        <div className="content">
-          <div className="main">
-            <Filter
-              count={changeState.products.length}
-              filter={changeState.filter}
-              size={changeState.size}
-              filterProducts={filterHandler}
-              sizeProducts={sizeHandler}
-            />
-            <Products
-              products={changeState.products}
-              onAddToCart={addToCartHandler}
-            />
+    <Provider store={store}>
+      <div className="grid-container">
+        <header>
+          <a href="/">React Shopping Cart</a>
+        </header>
+        <main>
+          <div className="content">
+            <div className="main">
+              <Filter
+                count={changeState.products.length}
+                filter={changeState.filter}
+                size={changeState.size}
+                filterProducts={filterHandler}
+                sizeProducts={sizeHandler}
+              />
+              <Products
+                products={changeState.products}
+                onAddToCart={addToCartHandler}
+              />
+            </div>
+            <div className="sidebar">
+              <Cart
+                cartItems={changeState.cartItems}
+                onRemoveFromCart={removeFromCartHandler}
+                onCreateOrder={createOrderHanlder}
+              />
+            </div>
           </div>
-          <div className="sidebar">
-            <Cart
-              cartItems={changeState.cartItems}
-              onRemoveFromCart={removeFromCartHandler}
-              onCreateOrder={createOrderHanlder}
-            />
-          </div>
-        </div>
-      </main>
-      <footer>All right is reserved</footer>
-    </div>
+        </main>
+        <footer>All right is reserved</footer>
+      </div>
+    </Provider>
   );
 };
 
