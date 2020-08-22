@@ -1,8 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import formatCurrency from './util';
 
 const Cart = (props) => {
   const { cartItems } = props;
+
+  const [checkoutState, setShowCheckout] = useState({
+    showCheckout: false,
+    name: '',
+    email: '',
+    address: '',
+  });
+
+  const inputHandler = (e) => {
+    const { name, value } = e.target;
+    setShowCheckout((preView) => {
+      return {
+        ...preView,
+        [name]: value,
+      };
+    });
+  };
+
+  const onCreateOrder = (e) => {
+    e.preventDefault();
+    const order = {
+      name: checkoutState.name,
+      email: checkoutState.email,
+      address: checkoutState.address,
+      cartItems: props.cartItems,
+    };
+    props.onCreateOrder(order);
+  };
+
   return (
     <div>
       {cartItems.length === 0 ? (
@@ -37,20 +66,63 @@ const Cart = (props) => {
           </ul>
         </div>
         {cartItems.length !== 0 && (
-          <div className="cart">
-            <div className="total">
-              <div>
-                Total:{' '}
-                {formatCurrency(
-                  cartItems.reduce(
-                    (accumulator, currentValue) =>
-                      accumulator + currentValue.price * currentValue.count,
-                    0
-                  )
-                )}
+          <div>
+            <div className="cart">
+              <div className="total">
+                <div>
+                  Total:{' '}
+                  {formatCurrency(
+                    cartItems.reduce(
+                      (accumulator, currentValue) =>
+                        accumulator + currentValue.price * currentValue.count,
+                      0
+                    )
+                  )}
+                </div>
+                <button
+                  onClick={() => setShowCheckout({ showCheckout: true })}
+                  className="button primary"
+                >
+                  Proceed
+                </button>
               </div>
-              <button className="button primary">Proceed</button>
             </div>
+            {checkoutState.showCheckout && (
+              <div className="cart">
+                <form onSubmit={onCreateOrder}>
+                  <ul className="form__container">
+                    <li>
+                      <label>Email</label>
+                      <input
+                        name="email"
+                        type="email"
+                        require
+                        onChange={inputHandler}
+                      />
+                      <label>Name</label>
+                      <input
+                        name="name"
+                        type="name"
+                        require
+                        onChange={inputHandler}
+                      />
+                      <label>Address</label>
+                      <input
+                        name="address"
+                        type="text"
+                        require
+                        onChange={inputHandler}
+                      />
+                    </li>
+                    <li>
+                      <button className="button primary" type="submit">
+                        Checkout
+                      </button>
+                    </li>
+                  </ul>
+                </form>
+              </div>
+            )}
           </div>
         )}
       </div>
