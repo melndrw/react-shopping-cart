@@ -104,6 +104,13 @@ const Products = (props) => {
   );
 };
 
-export default connect((state) => ({ products: state.products.items }), {
-  fetchProducts,
-})(Products);
+// the connect is based on react-redux which connect the data to the dabase
+export default connect(
+  (state) => ({
+    products: state.products.filteredItems,
+    //propsName:state.storeName.initialStateName
+  }),
+  {
+    fetchProducts,
+  }
+)(Products);

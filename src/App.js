@@ -20,49 +20,6 @@ const App = () => {
   const createOrderHanlder = (order) => {
     alert('Need to save order for ' + order.name);
   };
-  const sizeHandler = (event) => {
-    const { value } = event.target;
-    value === ''
-      ? setChangeState((preView) => {
-          return {
-            ...preView,
-            size: value,
-            products: data,
-          };
-        })
-      : setChangeState((preView) => {
-          return {
-            ...preView,
-            size: value,
-            products: data.filter((product) => {
-              return product.availableSizes.indexOf(value) >= 0;
-            }),
-          };
-        });
-  };
-
-  const filterHandler = (event) => {
-    const { value } = event.target;
-    setChangeState((state) => {
-      return {
-        ...state,
-        filter: value,
-        products: changeState.products.slice().sort((a, b) => {
-          return value === 'lowest'
-            ? a.price > b.price
-              ? 1
-              : -1
-            : value === 'highest'
-            ? a.price < b.price
-              ? 1
-              : -1
-            : a._id > b._id
-            ? 1
-            : -1;
-        }),
-      };
-    });
-  };
 
   const addToCartHandler = (product) => {
     const cartItems = changeState.cartItems.slice();
@@ -108,17 +65,8 @@ const App = () => {
         <main>
           <div className="content">
             <div className="main">
-              <Filter
-                count={changeState.products.length}
-                filter={changeState.filter}
-                size={changeState.size}
-                filterProducts={filterHandler}
-                sizeProducts={sizeHandler}
-              />
-              <Products
-                products={changeState.products}
-                onAddToCart={addToCartHandler}
-              />
+              <Filter />
+              <Products onAddToCart={addToCartHandler} />
             </div>
             <div className="sidebar">
               <Cart

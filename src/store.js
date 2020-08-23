@@ -8,6 +8,7 @@ const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   combineReducers({
     products: productsReducer,
+    // the product is a random name related for product database, but if multiple database exist, then the objects will increase
   }),
   initialState,
   composeEnhancer(applyMiddleware(thunk))
