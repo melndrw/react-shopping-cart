@@ -1,6 +1,5 @@
 // 2:06:00
 import React, { useState } from 'react';
-import data from './data';
 import Products from './components/Products';
 import Filter from './components/Filter';
 import Cart from './components/Cart';
@@ -13,9 +12,6 @@ const App = () => {
     cartItems: localStorage.getItem('cartItems')
       ? JSON.parse(localStorage.getItem('cartItems'))
       : [],
-    products: data,
-    size: '',
-    filter: '',
   });
   const createOrderHanlder = (order) => {
     alert('Need to save order for ' + order.name);
