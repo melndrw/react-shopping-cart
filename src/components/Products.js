@@ -3,8 +3,9 @@ import formatCurrency from './util';
 import Fade from 'react-reveal/Fade';
 import Modal from 'react-modal';
 import Zoom from 'react-reveal/Zoom';
-import { connect } from 'react-redux';
 import { fetchProducts } from '../actions/productActions';
+import { addToCart } from '../actions/cartAction';
+import { connect } from 'react-redux';
 
 const Products = (props) => {
   const [modal, setModal] = useState({
@@ -48,7 +49,7 @@ const Products = (props) => {
                     <div className="product__price">
                       <div>{formatCurrency(product.price)}</div>
                       <button
-                        onClick={() => props.onAddToCart(product)}
+                        onClick={() => props.addToCart(product)}
                         className="button primary"
                       >
                         Add To Cart
@@ -89,7 +90,7 @@ const Products = (props) => {
                 <button
                   className="button primary"
                   onClick={() => {
-                    props.onAddToCart(product);
+                    props.addToCart(product);
                     closeModalHandler();
                   }}
                 >
@@ -112,5 +113,6 @@ export default connect(
   }),
   {
     fetchProducts,
+    addToCart,
   }
 )(Products);

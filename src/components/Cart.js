@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import formatCurrency from './util';
 import Fade from 'react-reveal/Fade';
+import { connect } from 'react-redux';
+import { removeFromCart } from '../actions/cartAction';
 
 const Cart = (props) => {
   const { cartItems } = props;
@@ -28,7 +30,7 @@ const Cart = (props) => {
       name: checkoutState.name,
       email: checkoutState.email,
       address: checkoutState.address,
-      cartItems: props.cartItems,
+      cartItems: cartItems,
     };
     props.onCreateOrder(order);
   };
@@ -57,7 +59,7 @@ const Cart = (props) => {
                       {formatCurrency(item.price)} x {item.count}{' '}
                       <button
                         className="button"
-                        onClick={() => props.onRemoveFromCart(item)}
+                        onClick={() => props.removeFromCart(item)}
                       >
                         Remove
                       </button>
@@ -135,4 +137,9 @@ const Cart = (props) => {
   );
 };
 
-export default Cart;
+export default connect(
+  (state) => ({
+    cartItems: state.cart.cartProducts,
+  }),
+  { removeFromCart }
+)(Cart);
